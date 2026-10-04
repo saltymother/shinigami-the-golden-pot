@@ -1,8 +1,14 @@
 # SHINIGAMI: THE GOLDEN POT
 
+[![GitHub Pages](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-brightgreen?style=for-the-badge&logo=github)](https://saltymother.github.io/shinigami-the-golden-pot/)
+[![Status](https://img.shields.io/badge/Status-Deployed%20%26%20Verified-success?style=for-the-badge)](https://saltymother.github.io/shinigami-the-golden-pot/)
+
+> 🌐 **Live Website**: [https://saltymother.github.io/shinigami-the-golden-pot/](https://saltymother.github.io/shinigami-the-golden-pot/)  
+> 📱 *Full Mobile & Tablet support with on-screen virtual analog joystick and touch action buttons!*
+
 > **"I was completely lost... but the light was showing me the way."**
 
-A 3D first-person psychological horror exploration game playable directly in desktop browsers. Built with Three.js and Web Audio API, focusing on isolation, claustrophobia, megalophobia, repetition, uncertainty, and environmental observation.
+A 3D first-person psychological horror exploration game playable directly in web browsers. Built with Three.js and Web Audio API, focusing on isolation, claustrophobia, megalophobia, repetition, uncertainty, and environmental observation.
 
 ---
 
@@ -30,16 +36,16 @@ There are no GPS markers, arrows, radars, minimaps, or compasses. The **light it
 
 ---
 
-## 🎮 Controls
+## 🎮 Controls (Desktop & Mobile)
 
-| Action | Key / Control |
-| :--- | :--- |
-| **Move** | `W`, `A`, `S`, `D` |
-| **Look Around** | `Mouse Movement` (Pointer Lock) |
-| **Open Door / Interact** | `E` or `Left Mouse Button` |
-| **Toggle 1st / 3rd Person** | `V` (View complete Shinigami model) |
-| **Fast Glide / Sprint** | `Shift` |
-| **Pause Menu** | `Esc` |
+| Action | Desktop Keyboard/Mouse | Mobile Touchscreen |
+| :--- | :--- | :--- |
+| **Move** | `W`, `A`, `S`, `D` | Virtual Analog Joystick (Left thumb) |
+| **Look Around** | `Mouse Movement` (Pointer Lock) | Swipe / Drag Right Screen Area |
+| **Open Door / Interact** | `E` or `Left Mouse Button` | `🚪 OPEN` Touch Button or Tap Door |
+| **Toggle 1st / 3rd Person** | `V` (View Shinigami model) | `👁️ VIEW` Touch Button |
+| **Fast Glide / Sprint** | `Shift` | `⚡ GLIDE` Touch Button (Toggle) |
+| **Pause Menu** | `Esc` | `⏸ PAUSE` Touch Button |
 
 ---
 

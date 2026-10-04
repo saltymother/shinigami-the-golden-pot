@@ -158,10 +158,11 @@ window.GameEngine = (function() {
     // Canvas click: request pointer lock or interact
     dom.canvas.addEventListener('click', () => {
       if (gameState === 'PLAYING') {
-        if (!player.isPointerLocked) {
+        const isTouch = ('ontouchstart' in window) && window.innerWidth <= 900;
+        if (!isTouch && !player.isPointerLocked) {
           player.requestPointerLock();
         } else {
-          // Left click acts as interaction alternative
+          // Left click or tap acts as interaction alternative
           handleInteraction();
         }
       }
@@ -249,7 +250,10 @@ window.GameEngine = (function() {
     player.setPosition(0, 0, 3);
     player.yaw = 0;
     player.pitch = 0;
-    player.requestPointerLock();
+    const isTouch = ('ontouchstart' in window) && window.innerWidth <= 900;
+    if (!isTouch) {
+      try { player.requestPointerLock(); } catch (e) {}
+    }
 
     // Show initial objective and fade it after 16s
     dom.objective.classList.remove('fade-out');
@@ -435,7 +439,10 @@ window.GameEngine = (function() {
 
   return {
     init,
-    settings
+    settings,
+    handleInteraction,
+    pauseGame,
+    resumeGame
   };
 })();
 

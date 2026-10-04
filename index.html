@@ -176,6 +176,46 @@
     </div>
   </div>
 
+  <!-- MOBILE TOUCH CONTROLS OVERLAY -->
+  <div id="mobile-controls" class="mobile-controls-layer">
+    <!-- Left: Virtual Analog Joystick -->
+    <div id="joystick-zone" class="joystick-zone">
+      <div id="joystick-base" class="joystick-base">
+        <div id="joystick-knob" class="joystick-knob"></div>
+      </div>
+      <div class="joystick-hint">MOVE</div>
+    </div>
+
+    <!-- Right: Touch Look Swipe Area -->
+    <div id="touch-look-zone" class="touch-look-zone">
+      <div class="touch-look-hint">SWIPE TO LOOK</div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="mobile-actions-cluster">
+      <button id="btn-touch-interact" class="touch-btn btn-interact" aria-label="Open Door / Interact">
+        <span class="touch-btn-icon">🚪</span>
+        <span class="touch-btn-label">OPEN</span>
+      </button>
+
+      <button id="btn-touch-view" class="touch-btn btn-view" aria-label="Toggle 1st / 3rd Person View">
+        <span class="touch-btn-icon">👁️</span>
+        <span class="touch-btn-label">VIEW</span>
+      </button>
+
+      <button id="btn-touch-sprint" class="touch-btn btn-sprint" aria-label="Fast Glide">
+        <span class="touch-btn-icon">⚡</span>
+        <span class="touch-btn-label">GLIDE</span>
+      </button>
+    </div>
+
+    <!-- Top Quick Toolbar -->
+    <div class="mobile-top-bar">
+      <button id="btn-touch-pause" class="touch-pill-btn" aria-label="Pause Game">⏸ PAUSE</button>
+      <button id="btn-toggle-touch" class="touch-pill-btn active" aria-label="Toggle Touch Controls">🎮 TOUCH</button>
+    </div>
+  </div>
+
   <!-- Game Scripts -->
   <script src="js/textures.js"></script>
   <script src="js/audio.js"></script>

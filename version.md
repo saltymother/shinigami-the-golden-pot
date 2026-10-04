@@ -19,3 +19,16 @@
   - Built third-person character controller with fluid locomotion, jumping, and collision detection.
   - Integrated Web Audio ambient dungeon sound effects, footsteps, and artifact retrieval cues.
   - Added `.nojekyll` and GitHub Actions automated deployment workflow (`.github/workflows/deploy.yml`).
+
+## [v1.1.0] - 2026-10-04
+- **Commit:** Pending Signed Commit
+- **Author:** saltymother <saltymother@users.noreply.github.com>
+- **Type:** Feature | Mobile Responsiveness & 3D Touch Controls
+- **Status:** Deployed & Verified
+- **GitHub Pages:** https://saltymother.github.io/shinigami-the-golden-pot/
+- **Summary:**
+  - Implemented on-screen virtual analog joystick for 360-degree Shinigami movement on mobile devices.
+  - Implemented touch-look swipe surface for smooth pitch and yaw camera navigation without pointer lock.
+  - Added ergonomic mobile action touch buttons for opening doors / interacting, switching perspective, and fast gliding.
+  - Added touch-aware pointer lock handling and mobile quick-access toolbar.
+  - Formatted responsive CSS layouts preventing UI crowding across mobile portrait and landscape viewports.

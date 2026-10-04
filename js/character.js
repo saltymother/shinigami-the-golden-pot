@@ -61,6 +61,7 @@ window.ShinigamiController = (function() {
       this.buildModel();
       this.scene.add(this.mesh);
       this.setupInputListeners();
+      this.setupMobileTouchListeners();
     }
 
     // Build the 3D Shinigami Model
@@ -291,6 +292,194 @@ window.ShinigamiController = (function() {
       document.addEventListener('pointerlockchange', () => {
         this.isPointerLocked = (document.pointerLockElement === this.domElement);
       });
+    }
+
+    setupMobileTouchListeners() {
+      const mobileLayer = document.getElementById('mobile-controls');
+      if (!mobileLayer) return;
+
+      const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || window.innerWidth <= 900;
+      if (isTouch) {
+        mobileLayer.classList.add('active');
+      }
+
+      const toggleBtn = document.getElementById('btn-toggle-touch');
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          mobileLayer.classList.toggle('active');
+          toggleBtn.classList.toggle('active', mobileLayer.classList.contains('active'));
+        });
+      }
+
+      // 1. Virtual Joystick for Movement
+      const joystickZone = document.getElementById('joystick-zone');
+      const joystickBase = document.getElementById('joystick-base');
+      const joystickKnob = document.getElementById('joystick-knob');
+      let joystickTouchId = null;
+      let baseCenter = { x: 0, y: 0 };
+      const maxRadius = 45;
+
+      if (joystickZone && joystickKnob) {
+        const getTouch = (touches, id) => {
+          for (let i = 0; i < touches.length; i++) {
+            if (touches[i].identifier === id) return touches[i];
+          }
+          return null;
+        };
+
+        const updateJoystick = (clientX, clientY) => {
+          let dx = clientX - baseCenter.x;
+          let dy = clientY - baseCenter.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist > maxRadius) {
+            dx = (dx / dist) * maxRadius;
+            dy = (dy / dist) * maxRadius;
+          }
+          joystickKnob.style.transform = `translate(${dx}px, ${dy}px)`;
+
+          const normX = dx / maxRadius;
+          const normY = dy / maxRadius;
+          const deadZone = 0.22;
+
+          this.keys.forward = normY < -deadZone;
+          this.keys.backward = normY > deadZone;
+          this.keys.left = normX < -deadZone;
+          this.keys.right = normX > deadZone;
+        };
+
+        joystickZone.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          if (joystickTouchId !== null) return;
+          const touch = e.changedTouches[0];
+          joystickTouchId = touch.identifier;
+          const rect = joystickBase.getBoundingClientRect();
+          baseCenter = {
+            x: rect.left + rect.width / 2,
+            y: rect.top + rect.height / 2
+          };
+          updateJoystick(touch.clientX, touch.clientY);
+        }, { passive: false });
+
+        window.addEventListener('touchmove', (e) => {
+          if (joystickTouchId === null) return;
+          const touch = getTouch(e.touches, joystickTouchId);
+          if (!touch) return;
+          e.preventDefault();
+          updateJoystick(touch.clientX, touch.clientY);
+        }, { passive: false });
+
+        const resetJoystick = () => {
+          joystickTouchId = null;
+          joystickKnob.style.transform = `translate(0px, 0px)`;
+          this.keys.forward = false;
+          this.keys.backward = false;
+          this.keys.left = false;
+          this.keys.right = false;
+        };
+
+        window.addEventListener('touchend', (e) => {
+          if (joystickTouchId === null) return;
+          const touch = getTouch(e.changedTouches, joystickTouchId);
+          if (touch) resetJoystick();
+        });
+
+        window.addEventListener('touchcancel', (e) => {
+          if (joystickTouchId === null) return;
+          resetJoystick();
+        });
+      }
+
+      // 2. Touch Look Zone
+      const lookZone = document.getElementById('touch-look-zone');
+      let lookTouchId = null;
+      let lastLookPos = { x: 0, y: 0 };
+
+      if (lookZone) {
+        lookZone.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          if (lookTouchId !== null) return;
+          const touch = e.changedTouches[0];
+          lookTouchId = touch.identifier;
+          lastLookPos = { x: touch.clientX, y: touch.clientY };
+        }, { passive: false });
+
+        window.addEventListener('touchmove', (e) => {
+          if (lookTouchId === null) return;
+          let touch = null;
+          for (let i = 0; i < e.touches.length; i++) {
+            if (e.touches[i].identifier === lookTouchId) {
+              touch = e.touches[i];
+              break;
+            }
+          }
+          if (!touch) return;
+          const dx = touch.clientX - lastLookPos.x;
+          const dy = touch.clientY - lastLookPos.y;
+          lastLookPos = { x: touch.clientX, y: touch.clientY };
+
+          const sens = this.mouseSensitivity * 1.5;
+          this.yaw -= dx * sens;
+          this.pitch -= dy * sens;
+          const maxPitch = Math.PI / 2 - 0.05;
+          this.pitch = Math.max(-maxPitch, Math.min(maxPitch, this.pitch));
+        }, { passive: false });
+
+        const endLook = (e) => {
+          if (lookTouchId === null) return;
+          for (let i = 0; i < e.changedTouches.length; i++) {
+            if (e.changedTouches[i].identifier === lookTouchId) {
+              lookTouchId = null;
+              break;
+            }
+          }
+        };
+
+        window.addEventListener('touchend', endLook);
+        window.addEventListener('touchcancel', endLook);
+      }
+
+      // 3. Action Buttons
+      const btnView = document.getElementById('btn-touch-view');
+      if (btnView) {
+        btnView.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.toggleCameraMode();
+        }, { passive: false });
+      }
+
+      const btnSprint = document.getElementById('btn-touch-sprint');
+      if (btnSprint) {
+        btnSprint.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.keys.sprint = !this.keys.sprint;
+          btnSprint.classList.toggle('active', this.keys.sprint);
+        }, { passive: false });
+      }
+
+      const btnInteract = document.getElementById('btn-touch-interact');
+      if (btnInteract) {
+        btnInteract.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (window.GameEngine && window.GameEngine.handleInteraction) {
+            window.GameEngine.handleInteraction();
+          }
+        }, { passive: false });
+      }
+
+      const btnPause = document.getElementById('btn-touch-pause');
+      if (btnPause) {
+        btnPause.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (window.GameEngine && window.GameEngine.pauseGame) {
+            window.GameEngine.pauseGame();
+          }
+        }, { passive: false });
+      }
     }
 
     requestPointerLock() {
