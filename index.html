@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SHINIGAMI: THE GOLDEN POT</title>
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Three.js (Local Bundle with fallback to CDN) -->
+  <script src="lib/three.min.js"></script>
+  <script>
+    if (typeof THREE === 'undefined') {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>');
+    }
+  </script>
+</head>
+<body>
+
+  <!-- WebGL 3D Canvas -->
+  <canvas id="webgl-canvas"></canvas>
+
+  <!-- Atmospheric Horror Analog CRT & Vignette Scanline Overlay -->
+  <div class="horror-overlay">
+    <div class="scanlines"></div>
+  </div>
+
+  <!-- Screen Fade Overlay for Transitions & Victory -->
+  <div id="fade-overlay"></div>
+
+  <!-- Intermediate Discovery Text -->
+  <div id="found-text" class="hidden">You found it.</div>
+
+  <!-- Minimalist In-Game HUD -->
+  <div id="hud" class="hidden">
+    <div id="hud-objective">
+      <div class="objective-tag">DIMENSIONAL DIRECTIVE</div>
+      <div class="objective-text">OBJECTIVE: Find the Golden Pot.</div>
+      <div class="objective-hint">Follow the subtle light...</div>
+    </div>
+
+    <!-- Centered Reticle Dot -->
+    <div id="hud-crosshair"></div>
+
+    <!-- Context Interaction Prompt -->
+    <div id="hud-prompt" class="hidden">[E] Open Door</div>
+  </div>
+
+  <!-- MAIN MENU SCREEN -->
+  <div id="main-menu" class="screen">
+    <div class="menu-content">
+      <div class="title-badge">A PSYCHOLOGICAL EXPLORATION</div>
+      <h1 class="game-title">SHINIGAMI</h1>
+      <div class="game-subtitle">THE GOLDEN POT</div>
+
+      <div class="menu-buttons">
+        <button id="btn-play" class="btn-horror btn-primary">ENTER</button>
+        <button id="btn-controls" class="btn-horror">CONTROLS</button>
+        <button id="btn-settings" class="btn-horror">SETTINGS</button>
+      </div>
+
+      <div class="menu-footer">
+        NO WEAPONS • NO COMBAT • FOLLOW THE SLIGHTLY BRIGHTER DOOR
+      </div>
+    </div>
+  </div>
+
+  <!-- PAUSE MENU -->
+  <div id="pause-menu" class="screen hidden">
+    <div class="menu-content">
+      <h2 class="pause-title">PAUSED</h2>
+      <div class="menu-buttons">
+        <button id="btn-resume" class="btn-horror btn-primary">RESUME</button>
+        <button id="btn-pause-controls" class="btn-horror">CONTROLS</button>
+        <button id="btn-pause-settings" class="btn-horror">SETTINGS</button>
+        <button id="btn-restart" class="btn-horror">RESTART RUN</button>
+        <button id="btn-quit" class="btn-horror">MAIN MENU</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTROLS MODAL -->
+  <div id="controls-modal" class="modal-overlay">
+    <div class="modal-card">
+      <h3 class="modal-title">CONTROLS</h3>
+      <div class="controls-list">
+        <div class="control-item">
+          <span class="control-desc">Movement</span>
+          <span class="control-key">W A S D</span>
+        </div>
+        <div class="control-item">
+          <span class="control-desc">Look Around</span>
+          <span class="control-key">MOUSE</span>
+        </div>
+        <div class="control-item">
+          <span class="control-desc">Open Door / Interact</span>
+          <span class="control-key">E / LEFT CLICK</span>
+        </div>
+        <div class="control-item">
+          <span class="control-desc">Toggle 1st / 3rd Person View</span>
+          <span class="control-key">V</span>
+        </div>
+        <div class="control-item">
+          <span class="control-desc">Faster Glide / Sprint</span>
+          <span class="control-key">SHIFT</span>
+        </div>
+        <div class="control-item">
+          <span class="control-desc">Pause Menu</span>
+          <span class="control-key">ESC</span>
+        </div>
+      </div>
+      <button id="btn-close-controls" class="btn-horror">CLOSE</button>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div id="settings-modal" class="modal-overlay">
+    <div class="modal-card">
+      <h3 class="modal-title">SETTINGS</h3>
+      <div class="settings-list">
+        <div class="setting-item">
+          <div class="setting-header">
+            <span>Mouse Sensitivity</span>
+            <span id="val-sens" class="setting-value">1.0x</span>
+          </div>
+          <input type="range" id="slider-sens" min="0.3" max="2.5" step="0.1" value="1.0">
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-header">
+            <span>Master Volume</span>
+            <span id="val-master" class="setting-value">80%</span>
+          </div>
+          <input type="range" id="slider-master" min="0" max="1" step="0.05" value="0.8">
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-header">
+            <span>Ambient Acoustics</span>
+            <span id="val-ambient" class="setting-value">70%</span>
+          </div>
+          <input type="range" id="slider-ambient" min="0" max="1" step="0.05" value="0.7">
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-header">
+            <span>Field of View</span>
+            <span id="val-fov" class="setting-value">75°</span>
+          </div>
+          <input type="range" id="slider-fov" min="60" max="100" step="1" value="75">
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-header">
+            <span>Camera Perspective</span>
+          </div>
+          <select id="select-cam-mode">
+            <option value="first_person">First-Person (Immersive)</option>
+            <option value="third_person">Third-Person (View Shinigami)</option>
+          </select>
+        </div>
+      </div>
+      <button id="btn-close-settings" class="btn-horror">APPLY &amp; CLOSE</button>
+    </div>
+  </div>
+
+  <!-- VICTORY SCREEN -->
+  <div id="victory-screen" class="screen hidden">
+    <div class="menu-content">
+      <h1 class="victory-title">THE GOLDEN POT</h1>
+      <h2 class="victory-subtitle">You found your way through.</h2>
+      <p class="victory-desc">
+        Through endless repetition, claustrophobic corridors, and cavernous halls of silence,
+        you trusted the subtle light and discovered the golden essence.
+      </p>
+      <button id="btn-play-again" class="btn-horror btn-primary">PLAY AGAIN</button>
+    </div>
+  </div>
+
+  <!-- Game Scripts -->
+  <script src="js/textures.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/character.js"></script>
+  <script src="js/maze.js"></script>
+  <script src="js/game.js"></script>
+
+</body>
+</html>
